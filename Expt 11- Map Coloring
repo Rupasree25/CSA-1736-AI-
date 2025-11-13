@@ -1,0 +1,35 @@
+
+neighbors = {
+    'WA': ['NT', 'SA'],
+    'NT': ['WA', 'SA', 'Q'],
+    'SA': ['WA', 'NT', 'Q', 'NSW', 'V'],
+    'Q':  ['NT', 'SA', 'NSW'],
+    'NSW':['Q', 'SA', 'V'],
+    'V':  ['SA', 'NSW', 'T'],
+    'T':  ['V']
+}
+colors = ['Red', 'Green', 'Blue']
+color_assignment = {}
+def is_valid(region, color):
+for neighbor in neighbors.get(region, []):
+if neighbor in color_assignment and color_assignment[neighbor] == color:
+return False
+return True
+def assign_colors(region_list):
+if not region_list:
+return True
+ region = region_list[0]
+for color in colors:
+if is_valid(region, color):
+color_assignment[region] = color
+  if assign_colors(region_list[1:]):
+  return True
+ color_assignment.pop(region)
+return False
+regions = list(neighbors.keys())
+if assign_colors(regions):
+    print("Map Coloring Solution:")
+    for region, color in color_assignment.items():
+        print(f"{region} --> {color}")
+else:
+    print("No solution found.")
