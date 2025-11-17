@@ -1,0 +1,63 @@
+import math
+def entropy(labels):
+values = set(labels)
+ent = 0
+for v in values:
+p = labels.count(v) / len(labels)
+ent += -p * math.log2(p)
+return ent
+def information_gain(data, labels, feature_index):
+feature_values = [row[feature_index] for row in data]
+unique_values = set(feature_values)
+weighted_entropy = 0
+for val in unique_values:
+ subset_data = [data[i] for i in range(len(data)) if data[i][feature_index] == val]
+subset_labels = [labels[i] for i in range(len(labels)) if data[i][feature_index] == val]
+weighted_entropy += (len(subset_data) / len(data)) * entropy(subset_labels)
+return entropy(labels) - weighted_entropy
+class DecisionTreeNode:
+def __init__(self, feature=None, value=None, label=None):
+self.feature = feature
+self.value = value       
+self.label = label       
+self.children = {}      
+def build_decision_tree(data, labels):
+ if len(set(labels)) == 1:
+ return DecisionTreeNode(label=labels[0])
+if len(data[0]) == 0:
+return DecisionTreeNode(label=max(set(labels), key=labels.count))
+ num_features = len(data[0])
+gains = [information_gain(data, labels, f) for f in range(num_features)]
+best_feature = gains.index(max(gains))
+node = DecisionTreeNode(feature=best_feature)
+feature_values = set([row[best_feature] for row in data])
+for value in feature_values:
+subset_data = []
+subset_labels = []
+ for i in range(len(data)):
+if data[i][best_feature] == value:
+reduced_row = data[i][:best_feature] + data[i][best_feature+1:]
+subset_data.append(reduced_row)
+subset_labels.append(labels[i])
+node.children[value] = build_decision_tree(subset_data, subset_labels)
+return node
+def print_tree(node, indent=""):
+if node.label is not None:
+ print(indent + "Leaf:", node.label)
+return
+print(indent + f"Feature {node.feature}")
+for val, child in node.children.items():
+print(indent + f" ├── Value = {val}")
+print_tree(child, indent + "     ")
+data = [
+    ['Sunny', 'Hot', 'High'],
+    ['Sunny', 'Hot', 'Normal'],
+    ['Overcast', 'Hot', 'High'],
+    ['Rain', 'Mild', 'High'],
+    ['Rain', 'Cool', 'Normal'],
+]
+labels = ['No', 'No', 'Yes', 'Yes', 'Yes']
+tree = build_decision_tree(data, labels)
+
+print("\nDecision Tree Structure:\n")
+print_tree(tree)
