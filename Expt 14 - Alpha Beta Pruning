@@ -1,0 +1,33 @@
+import math
+def alpha_beta(node, depth, alpha, beta, maximizingPlayer, game_tree):
+if depth == 0 or node not in game_tree:
+return node
+if maximizingPlayer:
+ maxEval = -math.inf
+for child in game_tree[node]:
+eval_value = alpha_beta(child, depth - 1, alpha, beta, False, game_tree)
+maxEval = max(maxEval, eval_value)
+alpha = max(alpha, eval_value
+if beta <= alpha:
+ break   
+return maxEval
+ else:
+minEval = math.inf
+for child in game_tree[node]:
+eval_value = alpha_beta(child, depth - 1, alpha, beta, True, game_tree)
+minEval = min(minEval, eval_value)
+beta = min(beta, eval_value)
+if beta <= alpha:
+break   
+return minEval
+game_tree = {
+    'A': [3, 5, 6],      
+}
+game_tree = {
+ 'A': ['B', 'C'],
+'B': [3, 5, 6],
+'C': [9, 1, 2]
+ }
+best_value = alpha_beta('A', depth=1, alpha=-math.inf, beta=math.inf,
+ maximizingPlayer=True, game_tree=game_tree)
+print("Best value selected by AI:", best_value)
